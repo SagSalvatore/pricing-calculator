@@ -158,7 +158,7 @@ def calculate():
     result = PricingCalculator.calculate_pricing(ingredient_name, quantity_input, price_input)
     return jsonify(result)
 
-@app.route('/upload', methods=['POST', 'OPTIONS'])
+@app.route('/upload', methods=['GET', 'POST', 'OPTIONS'])
 def upload_file():
     # Handle preflight CORS requests
     if request.method == 'OPTIONS':
@@ -167,6 +167,10 @@ def upload_file():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
+    
+    # Handle GET requests - render the upload form
+    if request.method == 'GET':
+        return render_template('index.html')
     try:
         print(f"Upload request received. Method: {request.method}")
         print(f"Request headers: {dict(request.headers)}")
