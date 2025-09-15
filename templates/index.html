@@ -571,14 +571,19 @@
             };
             
             try {
-                const response = await fetch('calculate', {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch('/calculate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData),
-                    timeout: 30000
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -617,11 +622,16 @@
             
             try {
                 showBulkLoading(true);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
                 const response = await fetch('/upload', {
                     method: 'POST',
                     body: formData,
-                    timeout: 30000
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -811,6 +821,9 @@
                     status: item.status || ''
                 }));
                 
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
                 const response = await fetch('/download', {
                     method: 'POST',
                     headers: {
@@ -820,8 +833,10 @@
                         results: downloadData,
                         format: format
                     }),
-                    timeout: 30000
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
                     const errorData = await response.json();
