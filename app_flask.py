@@ -228,10 +228,14 @@ def upload_file():
             'success': True,
             'results': results,
             'total_items': len(results)
-        })
+        }), 200
     
     except Exception as e:
-        return jsonify({'error': f'Error processing file: {str(e)}'}), 500
+        print(f'Error processing file: {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': f'Error processing file: {str(e)}'
+        }), 500
 
 @app.route('/download', methods=['POST'])
 def download_results():
