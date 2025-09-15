@@ -625,11 +625,8 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000);
                 
-                const response = await fetch('/upload', {
+                const response = await fetch(`/upload?t=${Date.now()}`, {
                     method: 'POST',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
                     body: formData,
                     signal: controller.signal
                 });
