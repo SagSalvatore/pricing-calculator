@@ -611,7 +611,7 @@
             
             try {
                 showBulkLoading(true);
-                const response = await fetch('bulk_upload', {
+                const response = await fetch('/upload', {
                     method: 'POST',
                     body: formData
                 });
