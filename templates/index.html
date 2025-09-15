@@ -576,8 +576,13 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
+                    timeout: 30000
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const result = await response.json();
                 
@@ -589,7 +594,8 @@
                     hideResults();
                 }
             } catch (error) {
-                showError('An error occurred while calculating. Please try again.');
+                console.error('Single item calculation error:', error);
+                showError(`Network error: ${error.message}. Please try again.`);
                 hideResults();
             }
         });
@@ -613,8 +619,13 @@
                 showBulkLoading(true);
                 const response = await fetch('/upload', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    timeout: 30000
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const result = await response.json();
                 
@@ -627,7 +638,8 @@
                 }
                 
             } catch (error) {
-                showBulkError('Network error. Please try again.');
+                console.error('Bulk upload error:', error);
+                showBulkError(`Network error: ${error.message}. Please try again.`);
             } finally {
                 showBulkLoading(false);
             }
@@ -807,7 +819,8 @@
                     body: JSON.stringify({
                         results: downloadData,
                         format: format
-                    })
+                    }),
+                    timeout: 30000
                 });
                 
                 if (!response.ok) {
@@ -832,7 +845,7 @@
                 
             } catch (error) {
                 console.error('Download error:', error);
-                alert('Download failed: ' + error.message);
+                alert(`Download failed: ${error.message}. Please try again.`);
                 
                 // Reset button state
                 const downloadBtn = format === 'excel' ? document.getElementById('downloadExcel') : document.getElementById('downloadCSV');
