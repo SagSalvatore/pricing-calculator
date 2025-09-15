@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Calculator - Mordor Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .calculation-gif {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            border: 2px solid #1e40af;
+            background: #f0f9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .logo-icon {
+            background: white;
+            border: 2px solid #1e40af;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .logo-text p {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .main-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            min-height: 400px;
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .results h3 {
+            color: #065f46;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .main-result {
+            font-size: 36px;
+            font-weight: bold;
+            color: #059669;
+            margin-bottom: 10px;
+        }
+
+        .ingredient-name {
+            color: #374151;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .sidebar h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .variation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .variation-icon {
+            font-size: 20px;
+        }
+
+        .variation-content {
+            flex: 1;
+        }
+
+        .variation-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .variation-price {
+            font-weight: bold;
+            color: #059669;
+            font-size: 16px;
+        }
+
+        .footer {
+            background: white;
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .footer .creator-name {
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Mode Selector Styles */
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .mode-btn {
+            padding: 12px 24px;
+            border: 2px solid #3b82f6;
+            background: white;
+            color: #3b82f6;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59,130,246,0.3);
+        }
+        
+        /* Bulk Upload Styles */
+        .upload-instructions {
+            background: #e0f2fe;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .upload-instructions h3 {
+            margin: 0 0 15px 0;
+            color: #0369a1;
+            font-size: 18px;
+        }
+        
+        .upload-instructions ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .upload-instructions li {
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .download-section {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .download-section h3 {
+            margin: 0 0 15px 0;
+            color: #059669;
+        }
+        
+        .bulk-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .bulk-results-table th,
+        .bulk-results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .bulk-results-table th {
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .bulk-results-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-success {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .status-error {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .status-warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-left">
+                <div class="logo-icon">MI</div>
+                <div class="logo-text">
+                    <h1>Mordor Intelligence</h1>
+                    <p>Pricing Calculator</p>
+                </div>
+            </div>
+            <div class="calculation-gif">
+                🧮
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Mode Selection -->
+        <div class="mode-selector">
+            <button id="singleMode" class="mode-btn active">Single Item</button>
+            <button id="bulkMode" class="mode-btn">Bulk Upload</button>
+        </div>
+
+        <!-- Single Item Calculator -->
+        <div id="singleCalculator" class="main-content">
+            <h2>Ingredient Pricing Calculator</h2>
+            
+            <form id="pricingForm">
+                <div class="form-group">
+                    <label for="ingredient_name">Ingredient Name</label>
+                    <input type="text" id="ingredient_name" name="ingredient_name" 
+                           placeholder="e.g., Nat Frozen Whole Chicken Griller Box" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity_input">Quantity</label>
+                    <input type="text" id="quantity_input" name="quantity_input" 
+                           placeholder="e.g., 10x1200g, 400gm, 1.2kg, 500mg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="price_input">Price (₹)</label>
+                    <input type="number" id="price_input" name="price_input" 
+                           placeholder="e.g., 132.25" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="selected_unit">Output Unit</label>
+                    <select id="selected_unit" name="selected_unit">
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="g">Gram (g)</option>
+                        <option value="mg">Milligram (mg)</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Calculate</button>
+                    <button type="button" class="btn-secondary" onclick="clearForm()">Clear</button>
+                </div>
+            </form>
+
+            <div id="error-message" class="error-message hidden"></div>
+            
+            <div id="results" class="results hidden">
+                <h3 id="result-title">Price per KG</h3>
+                <div class="main-result" id="main-result">₹0.00</div>
+                <div class="ingredient-name" id="ingredient-display"></div>
+            </div>
+        </div>
+
+        <!-- Bulk Upload Calculator -->
+        <div id="bulkCalculator" class="main-content" style="display: none;">
+            <h2>📊 Bulk Pricing Calculator</h2>
+            <div class="upload-instructions">
+                     <h3>📋 File Format Requirements:</h3>
+                     <ul>
+                         <li>Only Excel (.xlsx, .xls) or CSV files allowed</li>
+                         <li>Maximum 1000 items per file</li>
+                         <li>Must have exactly <strong>3 columns</strong> in this order: <strong>Ingredient name, Quantity, Pricing</strong></li>
+                         <li>Headers are optional - just ensure data is in the correct order</li>
+                         <li>Example row: Sugar, 500g, 2.50</li>
+                     </ul>
+                 </div>
+            
+            <form id="bulkUploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="bulkFile">Upload File:</label>
+                    <input type="file" id="bulkFile" name="file" accept=".xlsx,.xls,.csv" required>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Process File</button>
+                </div>
+            </form>
+            
+            <div id="bulkError" class="error-message hidden"></div>
+            
+            <div id="bulkResult" class="results hidden">
+                <h3>Processing Results</h3>
+                <div id="bulkResultContent"></div>
+            </div>
+            
+            <div id="downloadSection" class="download-section hidden">
+                <h3>📥 Download Results</h3>
+                <div class="button-group">
+                    <button id="downloadExcel" class="btn-primary">Download Excel</button>
+                    <button id="downloadCSV" class="btn-secondary">Download CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <h3>All Variations</h3>
+            <div id="variations" class="hidden">
+                <div class="variation-item">
+                    <div class="variation-icon">⚖️</div>
+                    <div class="variation-content">
+                        <div class="variation-label">Per Kilogram</div>
+                        <div class="variation-price" id="price-kg">₹0.00</div>
+                    </div>
+                </div>
+                
+                <div class="variation-item">
+                    <div class="variation-icon">📏</div>
+                    <div class="variation-content">
+                        <div class="variation-label">Per Gram</div>
+                        <div class="variation-price" id="price-g">₹0.0000</div>
+                    </div>
+                </div>
+                
+                <div class="variation-item">
+                    <div class="variation-icon">🔬</div>
+                    <div class="variation-content">
+                        <div class="variation-label">Per Milligram</div>
+                        <div class="variation-price" id="price-mg">₹0.000000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Created by <span class="creator-name">Sagar Singh (Data Analyst)</span> | Mordor Intelligence</p>
+    </footer>
+
+    <script>
+        // Global variables for bulk results
+        let bulkResults = [];
+        
+        // Mode switching
+        document.getElementById('singleMode').addEventListener('click', function() {
+            document.getElementById('singleMode').classList.add('active');
+            document.getElementById('bulkMode').classList.remove('active');
+            document.getElementById('singleCalculator').style.display = 'block';
+            document.getElementById('bulkCalculator').style.display = 'none';
+        });
+        
+        document.getElementById('bulkMode').addEventListener('click', function() {
+            document.getElementById('bulkMode').classList.add('active');
+            document.getElementById('singleMode').classList.remove('active');
+            document.getElementById('singleCalculator').style.display = 'none';
+            document.getElementById('bulkCalculator').style.display = 'block';
+        });
+        
+        // Single item form submission
+        document.getElementById('pricingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                ingredient_name: document.getElementById('ingredient_name').value,
+                quantity_input: document.getElementById('quantity_input').value,
+                price_input: document.getElementById('price_input').value
+            };
+            
+            try {
+                const response = await fetch('calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result);
+                    hideError();
+                } else {
+                    showError(result.error);
+                    hideResults();
+                }
+            } catch (error) {
+                showError('An error occurred while calculating. Please try again.');
+                hideResults();
+            }
+        });
+        
+        // Bulk upload form submission
+        document.getElementById('bulkUploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('bulkFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showBulkError('Please select a file to upload.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                showBulkLoading(true);
+                const response = await fetch('bulk_upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bulkResults = result.results;
+                    displayBulkResults(result);
+                    document.getElementById('downloadSection').classList.remove('hidden');
+                } else {
+                    showBulkError(result.error || 'Error processing file.');
+                }
+                
+            } catch (error) {
+                showBulkError('Network error. Please try again.');
+            } finally {
+                showBulkLoading(false);
+            }
+        });
+        
+        // Download functionality
+        document.getElementById('downloadExcel').addEventListener('click', function() {
+            downloadResults('excel');
+        });
+        
+        document.getElementById('downloadCSV').addEventListener('click', function() {
+            downloadResults('csv');
+        });
+        
+        function displayResults(result) {
+            const selectedUnit = document.getElementById('selected_unit').value;
+            const results = result.results;
+            
+            // Update main result
+            const unitNames = {
+                'kg': 'Kilogram',
+                'g': 'Gram', 
+                'mg': 'Milligram'
+            };
+            
+            document.getElementById('result-title').textContent = `Price per ${unitNames[selectedUnit]}`;
+            
+            let mainPrice;
+            if (selectedUnit === 'kg') {
+                mainPrice = `₹${results.kg}`;
+            } else if (selectedUnit === 'g') {
+                mainPrice = `₹${results.g}`;
+            } else {
+                mainPrice = `₹${results.mg}`;
+            }
+            
+            document.getElementById('main-result').textContent = mainPrice;
+            document.getElementById('ingredient-display').textContent = result.ingredient_name;
+            
+            // Update sidebar variations
+            document.getElementById('price-kg').textContent = `₹${results.kg}`;
+            document.getElementById('price-g').textContent = `₹${results.g}`;
+            document.getElementById('price-mg').textContent = `₹${results.mg}`;
+            
+            // Show results
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('variations').classList.remove('hidden');
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+        
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+        
+        function hideResults() {
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('variations').classList.add('hidden');
+        }
+        
+        function clearForm() {
+            document.getElementById('pricingForm').reset();
+            hideResults();
+            hideError();
+        }
+        
+        // Bulk upload helper functions
+        function showBulkError(message) {
+            const errorDiv = document.getElementById('bulkError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            document.getElementById('bulkResult').classList.add('hidden');
+        }
+        
+        function hideBulkError() {
+            document.getElementById('bulkError').classList.add('hidden');
+        }
+        
+        function showBulkLoading(show) {
+            const submitBtn = document.querySelector('#bulkUploadForm button[type="submit"]');
+            if (show) {
+                submitBtn.textContent = 'Processing...';
+                submitBtn.disabled = true;
+            } else {
+                submitBtn.textContent = 'Process File';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        function displayBulkResults(result) {
+            const resultDiv = document.getElementById('bulkResult');
+            const contentDiv = document.getElementById('bulkResultContent');
+            
+            // Count successful and failed items
+            const successful = result.results.filter(item => item.status === 'Calculated successfully').length;
+            const failed = result.results.length - successful;
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <p><strong>Total Items:</strong> ${result.total_items}</p>
+                    <p><strong>Successful:</strong> <span class="status-success">${successful}</span></p>
+                    <p><strong>Failed:</strong> <span class="status-error">${failed}</span></p>
+                </div>
+            `;
+            
+            if (result.results && result.results.length > 0) {
+                html += `
+                    <table class="bulk-results-table">
+                        <thead>
+                            <tr>
+                                <th>Ingredient Name</th>
+                                <th>Quantity</th>
+                                <th>Price (₹)</th>
+                                <th>Per KG (₹)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                result.results.forEach(item => {
+                    const statusClass = item.status === 'Calculated successfully' ? 'status-success' : 'status-error';
+                    html += `
+                        <tr>
+                            <td>${item.ingredient_name || 'N/A'}</td>
+                            <td>${item.quantity_input || 'N/A'}</td>
+                            <td>${item.price_input || 'N/A'}</td>
+                            <td>${item.results ? item.results.kg : 'N/A'}</td>
+                            <td class="${statusClass}">${item.status}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            contentDiv.innerHTML = html;
+            resultDiv.classList.remove('hidden');
+        }
+        
+        function downloadResults(format) {
+            if (!bulkResults || bulkResults.length === 0) {
+                alert('No results to download.');
+                return;
+            }
+            
+            let content = '';
+            let filename = '';
+            let mimeType = '';
+            
+            if (format === 'csv') {
+                // CSV format
+                content = 'Ingredient Name,Quantity,Price,Per KG,Per G,Per MG,Status\n';
+                bulkResults.forEach(item => {
+                    const kg = item.results ? item.results.kg : 'N/A';
+                    const g = item.results ? item.results.g : 'N/A';
+                    const mg = item.results ? item.results.mg : 'N/A';
+                    content += `"${item.ingredient_name || ''}","${item.quantity_input || ''}","${item.price_input || ''}","${kg}","${g}","${mg}","${item.status}"\n`;
+                });
+                filename = 'pricing_results.csv';
+                mimeType = 'text/csv';
+            } else {
+                // Excel format (CSV with .xlsx extension for simplicity)
+                content = 'Ingredient Name,Quantity,Price,Per KG,Per G,Per MG,Status\n';
+                bulkResults.forEach(item => {
+                    const kg = item.results ? item.results.kg : 'N/A';
+                    const g = item.results ? item.results.g : 'N/A';
+                    const mg = item.results ? item.results.mg : 'N/A';
+                    content += `"${item.ingredient_name || ''}","${item.quantity_input || ''}","${item.price_input || ''}","${kg}","${g}","${mg}","${item.status}"\n`;
+                });
+                filename = 'pricing_results.xlsx';
+                mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Update main result when unit selection changes
+        document.getElementById('selected_unit').addEventListener('change', function() {
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv.classList.contains('hidden')) {
+                // Re-trigger calculation with current values
+                document.getElementById('pricingForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
