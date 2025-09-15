@@ -159,9 +159,9 @@ def upload_file():
     try:
         # Read the file
         if file.filename.endswith('.csv'):
-            df = pd.read_csv(file)
+            df = pd.read_csv(file, header=None)
         else:
-            df = pd.read_excel(file)
+            df = pd.read_excel(file, header=None)
         
         # Validate that file has exactly 3 columns
         if len(df.columns) != 3:
