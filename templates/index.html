@@ -627,6 +627,9 @@
                 
                 const response = await fetch('/upload', {
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     body: formData,
                     signal: controller.signal
                 });

@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app, 
      origins=['*'], 
      methods=['GET', 'POST', 'OPTIONS'],
-     allow_headers=['Content-Type', 'Authorization'],
+     allow_headers=['Content-Type', 'Authorization', 'Accept'],
      supports_credentials=False)
 # Remove APPLICATION_ROOT as it may cause path conflicts on Render
 # app.config['APPLICATION_ROOT'] = '/sagarsinghpricingcalculator'
@@ -147,7 +147,7 @@ def calculate():
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
         response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
     data = request.get_json()
@@ -164,7 +164,7 @@ def upload_file():
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
         response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
     
@@ -256,11 +256,18 @@ def upload_file():
                         'status': 'Calculated successfully'
                     })
         
-        return jsonify({
+        response = jsonify({
             'success': True,
             'results': results,
             'total_items': len(results)
-        }), 200
+        })
+        
+        # Add explicit CORS headers
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        
+        return response, 200
     
     except Exception as e:
         print(f"Error in upload_file: {str(e)}")
@@ -276,7 +283,7 @@ def download_results():
     if request.method == 'OPTIONS':
         response = jsonify({'status': 'ok'})
         response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
     try:
