@@ -383,6 +383,13 @@
             color: #f59e0b;
             font-weight: 600;
         }
+        
+        .results-note {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 10px;
+            text-align: center;
+        }
 
         @media (max-width: 768px) {
             .container {
@@ -774,7 +781,7 @@
                         <tbody>
                 `;
                 
-                result.results.forEach(item => {
+                result.results.slice(0, 5).forEach(item => {
                     const statusClass = item.status === 'Calculated successfully' ? 'status-success' : 'status-error';
                     html += `
                         <tr>
@@ -790,6 +797,7 @@
                 html += `
                         </tbody>
                     </table>
+                    ${result.results.length > 5 ? `<p class="results-note"><em>Showing top 5 results out of ${result.results.length} total results.</em></p>` : ''}
                 `;
             }
             
