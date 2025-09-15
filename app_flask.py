@@ -8,8 +8,9 @@ import os
 from typing import Dict, Optional
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-app.config['APPLICATION_ROOT'] = '/sagarsinghpricingcalculator'
+CORS(app, origins=['*'])  # Enable CORS for all origins
+# Remove APPLICATION_ROOT as it may cause path conflicts on Render
+# app.config['APPLICATION_ROOT'] = '/sagarsinghpricingcalculator'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
@@ -146,17 +147,24 @@ def calculate():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Only Excel (.xlsx, .xls) and CSV files are allowed'}), 400
-    
     try:
+        print(f"Upload request received. Method: {request.method}")
+        print(f"Request headers: {dict(request.headers)}")
+        
+        if 'file' not in request.files:
+            print("Error: No file in request")
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            print("Error: Empty filename")
+            return jsonify({'error': 'No file selected'}), 400
+        
+        print(f"File received: {file.filename}")
+        
+        if not allowed_file(file.filename):
+            print(f"Error: Invalid file type for {file.filename}")
+            return jsonify({'error': 'Only Excel (.xlsx, .xls) and CSV files are allowed'}), 400
         # Read the file
         if file.filename.endswith('.csv'):
             df = pd.read_csv(file, header=None)
@@ -231,7 +239,8 @@ def upload_file():
         }), 200
     
     except Exception as e:
-        print(f'Error processing file: {str(e)}')
+        print(f"Error in upload_file: {str(e)}")
+        print(f"Exception type: {type(e).__name__}")
         return jsonify({
             'success': False,
             'error': f'Error processing file: {str(e)}'
