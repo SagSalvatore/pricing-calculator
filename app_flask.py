@@ -250,9 +250,36 @@ def download_results():
         if len(results) > 1000:
             return jsonify({'error': 'Too many results. Maximum 1000 items allowed for download.'}), 400
         
-        # Create DataFrame from results
-        df = pd.DataFrame(results)
-        df.columns = ['Ingredient Name', 'Quantity', 'Unit Price', 'Total Price', 'Status']
+        # Process results to handle new data format from frontend
+        processed_data = []
+        for item in results:
+            if isinstance(item, dict):
+                # Handle new object format from frontend
+                row = {
+                    'Ingredient Name': item.get('ingredient_name', ''),
+                    'Quantity': item.get('quantity_input', ''),
+                    'Price': item.get('price_input', ''),
+                    'Per KG': item.get('per_kg', 'N/A'),
+                    'Per G': item.get('per_g', 'N/A'),
+                    'Per MG': item.get('per_mg', 'N/A'),
+                    'Status': item.get('status', '')
+                }
+                processed_data.append(row)
+            elif isinstance(item, list) and len(item) >= 5:
+                # Handle legacy array format
+                row = {
+                    'Ingredient Name': item[0] if len(item) > 0 else '',
+                    'Quantity': item[1] if len(item) > 1 else '',
+                    'Price': item[2] if len(item) > 2 else '',
+                    'Per KG': item[3] if len(item) > 3 else 'N/A',
+                    'Per G': item[4] if len(item) > 4 else 'N/A',
+                    'Per MG': item[5] if len(item) > 5 else 'N/A',
+                    'Status': item[6] if len(item) > 6 else ''
+                }
+                processed_data.append(row)
+        
+        # Create DataFrame from processed results
+        df = pd.DataFrame(processed_data)
         
         # Create file in memory with error handling
         output = io.BytesIO()

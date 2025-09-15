@@ -775,49 +775,70 @@
             resultDiv.classList.remove('hidden');
         }
         
-        function downloadResults(format) {
+        async function downloadResults(format) {
             if (!bulkResults || bulkResults.length === 0) {
                 alert('No results to download.');
                 return;
             }
             
-            let content = '';
-            let filename = '';
-            let mimeType = '';
-            
-            if (format === 'csv') {
-                // CSV format
-                content = 'Ingredient Name,Quantity,Price,Per KG,Per G,Per MG,Status\n';
-                bulkResults.forEach(item => {
-                    const kg = item.results ? item.results.kg : 'N/A';
-                    const g = item.results ? item.results.g : 'N/A';
-                    const mg = item.results ? item.results.mg : 'N/A';
-                    content += `"${item.ingredient_name || ''}","${item.quantity_input || ''}","${item.price_input || ''}","${kg}","${g}","${mg}","${item.status}"\n`;
+            try {
+                // Show loading state
+                const downloadBtn = format === 'excel' ? document.getElementById('downloadExcel') : document.getElementById('downloadCSV');
+                const originalText = downloadBtn.textContent;
+                downloadBtn.textContent = 'Downloading...';
+                downloadBtn.disabled = true;
+                
+                // Prepare data for server-side processing
+                const downloadData = bulkResults.map(item => ({
+                    ingredient_name: item.ingredient_name || '',
+                    quantity_input: item.quantity_input || '',
+                    price_input: item.price_input || '',
+                    per_kg: item.results ? item.results.kg : 'N/A',
+                    per_g: item.results ? item.results.g : 'N/A',
+                    per_mg: item.results ? item.results.mg : 'N/A',
+                    status: item.status || ''
+                }));
+                
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        results: downloadData,
+                        format: format
+                    })
                 });
-                filename = 'pricing_results.csv';
-                mimeType = 'text/csv';
-            } else {
-                // Excel format (CSV with .xlsx extension for simplicity)
-                content = 'Ingredient Name,Quantity,Price,Per KG,Per G,Per MG,Status\n';
-                bulkResults.forEach(item => {
-                    const kg = item.results ? item.results.kg : 'N/A';
-                    const g = item.results ? item.results.g : 'N/A';
-                    const mg = item.results ? item.results.mg : 'N/A';
-                    content += `"${item.ingredient_name || ''}","${item.quantity_input || ''}","${item.price_input || ''}","${kg}","${g}","${mg}","${item.status}"\n`;
-                });
-                filename = 'pricing_results.xlsx';
-                mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Download failed');
+                }
+                
+                // Get the file as blob
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = format === 'csv' ? 'pricing_results.csv' : 'pricing_results.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                // Reset button state
+                downloadBtn.textContent = originalText;
+                downloadBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Download failed: ' + error.message);
+                
+                // Reset button state
+                const downloadBtn = format === 'excel' ? document.getElementById('downloadExcel') : document.getElementById('downloadCSV');
+                downloadBtn.textContent = format === 'excel' ? 'Download Excel' : 'Download CSV';
+                downloadBtn.disabled = false;
             }
-            
-            const blob = new Blob([content], { type: mimeType });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
         }
         
         // Update main result when unit selection changes
