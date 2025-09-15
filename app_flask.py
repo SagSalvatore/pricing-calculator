@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_file
+from flask_cors import CORS
 import re
 import pandas as pd
 import io
@@ -7,9 +8,11 @@ import os
 from typing import Dict, Optional
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 app.config['APPLICATION_ROOT'] = '/sagarsinghpricingcalculator'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 
 # Create uploads directory if it doesn't exist
 if not os.path.exists('uploads'):
@@ -232,39 +235,63 @@ def upload_file():
 
 @app.route('/download', methods=['POST'])
 def download_results():
-    data = request.get_json()
-    results = data.get('results', [])
-    file_format = data.get('format', 'excel')  # 'excel' or 'csv'
-    
-    if not results:
-        return jsonify({'error': 'No results to download'}), 400
-    
-    # Create DataFrame from results
-    df = pd.DataFrame(results)
-    df.columns = ['Ingredient Name', 'Quantity', 'Unit Price', 'Total Price', 'Status']
-    
-    # Create file in memory
-    output = io.BytesIO()
-    
-    if file_format == 'csv':
-        df.to_csv(output, index=False)
-        output.seek(0)
-        return send_file(
-            output,
-            mimetype='text/csv',
-            as_attachment=True,
-            download_name='pricing_results.csv'
-        )
-    else:
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Pricing Results')
-        output.seek(0)
-        return send_file(
-            output,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            as_attachment=True,
-            download_name='pricing_results.xlsx'
-        )
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data received'}), 400
+            
+        results = data.get('results', [])
+        file_format = data.get('format', 'excel')  # 'excel' or 'csv'
+        
+        if not results:
+            return jsonify({'error': 'No results to download'}), 400
+        
+        # Limit results to prevent memory issues
+        if len(results) > 1000:
+            return jsonify({'error': 'Too many results. Maximum 1000 items allowed for download.'}), 400
+        
+        # Create DataFrame from results
+        df = pd.DataFrame(results)
+        df.columns = ['Ingredient Name', 'Quantity', 'Unit Price', 'Total Price', 'Status']
+        
+        # Create file in memory with error handling
+        output = io.BytesIO()
+        
+        if file_format == 'csv':
+            df.to_csv(output, index=False, encoding='utf-8')
+            output.seek(0)
+            
+            response = send_file(
+                output,
+                mimetype='text/csv',
+                as_attachment=True,
+                download_name='pricing_results.csv'
+            )
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            return response
+        else:
+            try:
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    df.to_excel(writer, index=False, sheet_name='Pricing Results')
+                output.seek(0)
+                
+                response = send_file(
+                    output,
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    as_attachment=True,
+                    download_name='pricing_results.xlsx'
+                )
+                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                response.headers['Pragma'] = 'no-cache'
+                response.headers['Expires'] = '0'
+                return response
+            except Exception as e:
+                return jsonify({'error': f'Failed to create Excel file: {str(e)}'}), 500
+                
+    except Exception as e:
+        return jsonify({'error': f'Download failed: {str(e)}'}), 500
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'csv', 'xlsx', 'xls'}
