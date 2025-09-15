@@ -8,10 +8,16 @@ import os
 from typing import Dict, Optional
 
 app = Flask(__name__)
-CORS(app, origins=['*'])  # Enable CORS for all origins
+# Configure CORS with more permissive settings
+CORS(app, 
+     origins=['*'], 
+     methods=['GET', 'POST', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=False)
 # Remove APPLICATION_ROOT as it may cause path conflicts on Render
 # app.config['APPLICATION_ROOT'] = '/sagarsinghpricingcalculator'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for API endpoints
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 
@@ -135,8 +141,15 @@ class PricingCalculator:
 def index():
     return render_template('index.html')
 
-@app.route('/calculate', methods=['POST'])
+@app.route('/calculate', methods=['POST', 'OPTIONS'])
 def calculate():
+    # Handle preflight CORS requests
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
     data = request.get_json()
     ingredient_name = data.get('ingredient_name', '')
     quantity_input = data.get('quantity_input', '')
@@ -145,8 +158,15 @@ def calculate():
     result = PricingCalculator.calculate_pricing(ingredient_name, quantity_input, price_input)
     return jsonify(result)
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
+    # Handle preflight CORS requests
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
     try:
         print(f"Upload request received. Method: {request.method}")
         print(f"Request headers: {dict(request.headers)}")
@@ -246,8 +266,15 @@ def upload_file():
             'error': f'Error processing file: {str(e)}'
         }), 500
 
-@app.route('/download', methods=['POST'])
+@app.route('/download', methods=['POST', 'OPTIONS'])
 def download_results():
+    # Handle preflight CORS requests
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
     try:
         data = request.get_json()
         if not data:
