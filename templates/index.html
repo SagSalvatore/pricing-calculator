@@ -444,7 +444,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="price_input">Price (₹)</label>
+                    <label for="price_input">Price (AED)</label>
                     <input type="number" id="price_input" name="price_input" 
                            placeholder="e.g., 132.25" step="0.01" required>
                 </div>
@@ -468,7 +468,7 @@
             
             <div id="results" class="results hidden">
                 <h3 id="result-title">Price per KG</h3>
-                <div class="main-result" id="main-result">₹0.00</div>
+                <div class="main-result" id="main-result">AED 0.00</div>
                 <div class="ingredient-name" id="ingredient-display"></div>
             </div>
         </div>
@@ -521,7 +521,7 @@
                     <div class="variation-icon">⚖️</div>
                     <div class="variation-content">
                         <div class="variation-label">Per Kilogram</div>
-                        <div class="variation-price" id="price-kg">₹0.00</div>
+                        <div class="variation-price" id="price-kg">AED 0.00</div>
                     </div>
                 </div>
                 
@@ -529,7 +529,7 @@
                     <div class="variation-icon">📏</div>
                     <div class="variation-content">
                         <div class="variation-label">Per Gram</div>
-                        <div class="variation-price" id="price-g">₹0.0000</div>
+                        <div class="variation-price" id="price-g">AED 0.0000</div>
                     </div>
                 </div>
                 
@@ -537,7 +537,7 @@
                     <div class="variation-icon">🔬</div>
                     <div class="variation-content">
                         <div class="variation-label">Per Milligram</div>
-                        <div class="variation-price" id="price-mg">₹0.000000</div>
+                        <div class="variation-price" id="price-mg">AED 0.000000</div>
                     </div>
                 </div>
             </div>
@@ -686,20 +686,20 @@
             
             let mainPrice;
             if (selectedUnit === 'kg') {
-                mainPrice = `₹${results.kg}`;
+                mainPrice = `AED ${results.kg}`;
             } else if (selectedUnit === 'g') {
-                mainPrice = `₹${results.g}`;
+                mainPrice = `AED ${results.g}`;
             } else {
-                mainPrice = `₹${results.mg}`;
+                mainPrice = `AED ${results.mg}`;
             }
             
             document.getElementById('main-result').textContent = mainPrice;
             document.getElementById('ingredient-display').textContent = result.ingredient_name;
             
             // Update sidebar variations
-            document.getElementById('price-kg').textContent = `₹${results.kg}`;
-            document.getElementById('price-g').textContent = `₹${results.g}`;
-            document.getElementById('price-mg').textContent = `₹${results.mg}`;
+                document.getElementById('price-kg').textContent = `AED ${results.kg}`;
+                document.getElementById('price-g').textContent = `AED ${results.g}`;
+                document.getElementById('price-mg').textContent = `AED ${results.mg}`;
             
             // Show results
             document.getElementById('results').classList.remove('hidden');
@@ -773,8 +773,8 @@
                             <tr>
                                 <th>Ingredient Name</th>
                                 <th>Quantity</th>
-                                <th>Price (₹)</th>
-                                <th>Per KG (₹)</th>
+                                <th>Price (AED)</th>
+                                <th>Per KG (AED)</th>
                                 <th>Status</th>
                             </tr>
                         </thead>

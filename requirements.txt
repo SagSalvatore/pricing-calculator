@@ -4,3 +4,43 @@ flask-cors>=5.0.0
 pandas>=2.0.0
 openpyxl>=3.1.0
 gunicorn>=21.2.0
+
+
+### 🌐 **Deployment Options for FastAPI**
+
+FastAPI works with **all the same deployment platforms**:
+
+1. **Railway** - Excellent FastAPI support
+2. **Render** - Native FastAPI deployment
+3. **Fly.io** - Great for FastAPI apps
+4. **Vercel** - Better FastAPI support than Flask
+5. **Heroku** - Full FastAPI compatibility
+
+### 📊 **Should You Switch?**
+
+**For your pricing calculator, I'd recommend FastAPI because:**
+
+✅ **Better file handling** - Your Excel uploads will be faster
+✅ **Automatic docs** - Team can see `/docs` endpoint
+✅ **Modern framework** - Future-proof choice
+✅ **Same deployment** - Works on all platforms we discussed
+✅ **Easy migration** - Your Flask logic can be ported over
+
+### 🎯 **My Recommendation**
+
+**Stick with Flask for now** if you want to deploy quickly, **OR** **migrate to FastAPI** if you have a few hours to improve the app significantly.
+
+**Quick FastAPI deployment steps:**
+1. Convert your Flask routes to FastAPI
+2. Update `requirements.txt` (add `fastapi uvicorn`)
+3. Deploy to Railway/Render with FastAPI
+4. Share the URL with your team
+
+### 📝 **FastAPI Requirements File**
+```
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pandas==2.1.3
+openpyxl==3.1.2
+python-multipart==0.0.6
+```

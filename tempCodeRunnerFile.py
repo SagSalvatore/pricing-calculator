@@ -38,40 +38,20 @@ class PricingCalculator:
             if re.match(r'^\d+(?:\.\d+)?$', quantity_str):
                 return None, "Please specify the unit of measurement (kg, g, gm, mg, l, ml). Example: 400g, 1.2kg, 500mg, 2l, 250ml"
             
-            # Handle multiplication format (e.g., "10x100g", "20*1200g", "6x2x230g")
-            # Check if there are multiplication operators
-            if 'x' in quantity_str or '*' in quantity_str:
-                # Split by both 'x' and '*' operators
-                parts = re.split(r'[x*]', quantity_str)
-                
-                if len(parts) < 2:
-                    return None, "Invalid multiplication format. Use formats like '10x100g', '6x2x230g', '400g', '1.2kg'"
-                
-                # Extract unit from the last part
-                last_part = parts[-1]
-                unit_match = re.match(r'(\d+(?:\.\d+)?)([a-z]*)', last_part)
-                
-                if not unit_match:
-                    return None, "Invalid quantity format. Use formats like '10x100g', '6x2x230g', '400g', '1.2kg'"
-                
-                unit = unit_match.group(2)
+            # Handle multiplication format (e.g., "10x100g", "20*1200g")
+            mult_pattern = r'(\d+)[x*](\d+(?:\.\d+)?)([a-z]*)'  
+            mult_match = re.match(mult_pattern, quantity_str)
+            
+            if mult_match:
+                count = float(mult_match.group(1))
+                weight = float(mult_match.group(2))
+                unit = mult_match.group(3)
                 
                 # Check if unit is missing in multiplication format
                 if not unit:
-                    return None, "Please specify the unit of measurement. Example: 10x100g, 6x2x230g, 5x200mg, 3x1.5kg, 2x500ml"
+                    return None, "Please specify the unit of measurement. Example: 10x100g, 5x200mg, 3x1.5kg, 2x500ml"
                 
-                # Calculate total by multiplying all numeric parts
-                try:
-                    total_weight = 1.0
-                    # Multiply all parts except extract the number from the last part
-                    for i, part in enumerate(parts):
-                        if i == len(parts) - 1:
-                            # Last part contains the unit, extract only the number
-                            total_weight *= float(unit_match.group(1))
-                        else:
-                            total_weight *= float(part)
-                except ValueError:
-                    return None, "Invalid numbers in multiplication format. Use formats like '10x100g', '6x2x230g'"
+                total_weight = count * weight
             else:
                 # Handle single quantity format (e.g., "400g", "1.2kg")
                 single_pattern = r'(\d+(?:\.\d+)?)([a-z]*)'  
@@ -269,9 +249,9 @@ def upload_file():
                         'quantity_input': quantity,
                         'price_input': pricing,
                         'results': {
-                            'kg': f'AED {price_per_kg:.2f}',
-                            'g': f'AED {price_per_gram:.2f}',
-                            'mg': f'AED {price_per_mg:.4f}'
+                            'kg': f'₹{price_per_kg:.2f}',
+                            'g': f'₹{price_per_gram:.2f}',
+                            'mg': f'₹{price_per_mg:.4f}'
                         },
                         'status': 'Calculated successfully'
                     })
